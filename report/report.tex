@@ -1,0 +1,62 @@
+\documentclass[10pt, conference]{IEEEtran}
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+
+\begin{document}
+
+\title{Learning Reduced-Round Cipher Behavior using Machine Learning: A Case Study on SIMON32/64}
+
+\author{\IEEEauthorblockN{Anonymous Researcher}
+\IEEEauthorblockA{\textit{Cryptography \& Machine Learning Class Project} \\
+}
+}
+\maketitle
+
+\begin{abstract}
+This report investigates the boundaries of machine learning capabilities in modeling the input-output behavior of the reduced-round SIMON32/64 lightweight block cipher. By framing the encryption process as a black-box multi-output binary classification task, we analyze the performance of various models—Logistic Regression, Multi-Layer Perceptrons (MLP), and Convolutional Neural Networks (CNN)—across increasing encryption rounds. Our findings demonstrate that while all models easily learn the 1-round permutation, learning degrades sharply as rounds increase. Logistic regression fails to capture behavior beyond 1 round, while deeper models reach random guessing accuracy at 4 rounds. This highlights the robust nonlinear diffusion properties of SIMON even at significantly reduced rounds.
+\end{abstract}
+
+\begin{IEEEkeywords}
+Cryptography, Machine Learning, Block Ciphers, SIMON, Neural Networks
+\end{IEEEkeywords}
+
+\section{Introduction}
+Modern block ciphers are designed to withstand classical cryptanalysis techniques such as linear and differential cryptanalysis through carefully constructed substitution and permutation matrices. With the rise of deep learning, there is growing interest in using neural networks to cryptanalyze ciphers or distinguish ciphertext from random noise. The objective of this project is to study whether conventional machine learning models can learn the input-output behavior of a reduced-round lightweight block cipher, and how this learnability degrades as the number of rounds $r$ increases. We use SIMON32/64, a lightweight Feistel cipher designed by the NSA, as our target for this study.
+
+\section{Methodology}
+\subsection{Cipher Implementation}
+SIMON32/64 operates on a 32-bit plaintext block divided into two 16-bit halves, utilizing a 64-bit key structure. The round function consists of bitwise XOR, bitwise AND, and circular shifts. For this project, a custom Python implementation of SIMON32/64 was written to support arbitrary $r$ rounds. 
+For our experiments, we fix a constant 64-bit secret key ($K=$ \texttt{0x1918111009080100}). We treat the reduced-round encryption algorithm as a black-box function $E_{k}^{r}: \{0,1\}^{32} \to \{0,1\}^{32}$.
+
+\subsection{Machine Learning Models}
+We frame the learning problem as a multi-target binary classification task, predicting each bit of the 32-bit ciphertext independently given the 32-bit plaintext. Three distinct neural architectures were designed and evaluated:
+\begin{itemize}
+    \item \textbf{Logistic Regression (LR):} A baseline linear model consisting of a single \texttt{nn.Linear(32, 32)} layer. Since SIMON utilizes a non-linear bitwise AND operation, an affine model is expected to fail quickly as rounds increase.
+    \item \textbf{Multi-Layer Perceptron (MLP):} A deep, fully-connected network with two hidden layers of 256 neurons, batch normalization, and ReLU activations. This structure provides the universal approximation capacity required to model non-linear cryptographic functions.
+    \item \textbf{Convolutional Neural Network (CNN):} A 1D-CNN designed to exploit local structural features arising from bit shifts during diffusion. It uses sequential $3\times3$ convolutions with 32 and 64 channels, feeding into a 256-unit fully-connected dense layer.
+\end{itemize}
+
+\subsection{Experimental Setup}
+For each round count $r \in [1, 5]$, we independently generate a dataset comprising 100,000 random plaintexts mapped to their corresponding $r$-round ciphertexts. Plaintexts and ciphertexts are vectorized into 32-dimensional tensors of $1$s and $0$s. Each dataset is divided into an 80\% training segment, 10\% validation segment, and 10\% test segment.
+The models are trained using Binary Cross-Entropy with Logits Loss (\texttt{BCEWithLogitsLoss}) and the Adam optimizer ($lr=10^{-3}$) for 20 epochs. Performance is aggregated using Bitwise Prediction Accuracy (baseline $50\%$) and Average Hamming Distance (baseline $16.0$ for 32 bits).
+
+\section{Experimental Results}
+Our evaluation focused on predicting ciphertext sequences up to $r=5$ rounds. The results clearly demonstrate a bounded threshold in ML predictability:
+\begin{itemize}
+    \item \textbf{1 Round:} All three models successfully learn the mapping. LR achieves roughly $75\%$ accuracy, exploiting the linearity present in the unmodified ciphertext half, while MLP and CNN perfectly overfit the distribution with $100\%$ accuracy (Hamming distance of 0.00).
+    \item \textbf{2 Rounds:} LR immediately degrades to random guessing ($49.95\%$ accuracy). However, MLP remains highly successful ($98.48\%$ accuracy), displaying its capacity to model two concatenated non-linear AND functions before widespread diffusion takes effect. CNN maintains solid accuracy ($92.5\%$).
+    \item \textbf{3 Rounds:} The non-linear operations combined with bit-shifts propagate uncertainty rapidly. MLP performance drops to $67.76\%$, and CNN degrades similarly.
+    \item \textbf{4 and 5 Rounds:} All models cross the random-guess entropy limit ($50\%$). The test accuracy centers perfectly around ~$50\%$, and Average Hamming Distances sit at $16.0$, indicating that the models have fundamentally failed to extract any determinable signal linking the plaintexts to the ciphertexts.
+\end{itemize}
+
+\section{Analysis}
+The performance disparities between linear and deep models highlight the design efficiency of the SIMON cipher. The bitwise AND gate (degree 2) provides the foundational non-linearity. One round affects only a local segment of bits in the ciphertext, allowing an MLP to explicitly model the function. By round 4, however, every bit of the ciphertext becomes a complex algebraic function of nearly every bit in the plaintext and the key, inducing complete diffusion. High diffusion forces deep neural models to require exponentially larger capacities and dataset sizes to maintain statistical correlations, effectively rendering the black-box mapping unlearnable for practical generic models.
+
+\section{Conclusion}
+This study validates that multi-layer perceptrons and convolutional networks can emulate lightweight ciphers effectively for $r \leq 3$ rounds, significantly outperforming straightforward Logistic Regression. However, modern lightweight ciphers execute rapid non-linear diffusion. We observed that SIMON32/64 entirely breaks generalized structural correlations by $r=4$, preventing any model from performing better than random classification. Future extensions could evaluate key-dependency generalization or formulate the problem as an AI distinguishing task rather than strict mapping.
+
+\end{document}
