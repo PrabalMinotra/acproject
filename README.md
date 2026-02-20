@@ -1,41 +1,66 @@
 # Learning Reduced-Round Cipher Behavior using Machine Learning
-**Author:** Prabal Minotra / Academic Project
-**Topics:** Cryptanalysis, SIMON Block Cipher, PyTorch, Deep Learning
 
-This project analyzes whether Machine Learning models (Logistic Regression, Multi-Layer Perceptrons, Convolutional Neural Networks) can effectively learn the input-output mappings of the SIMON32/64 lightweight block cipher. We explore learning degradation as the number of encryption rounds ($r$) increases.
+This repository investigates the boundary condition where machine learning models (Logistic Regression, Multi-Layer Perceptrons, Convolutional Neural Networks) fail to approximate the behavior of 12 distinct lightweight cryptographic block and stream ciphers.
 
-## Structure
-- `src/simon.py`: A clean, verifiable implementation of the SIMON32/64 cipher optimized for configurable limited-round encryption.
-- `src/dataset.py`: PyTorch `Dataset` framework that generates 100,000 mapping pairs of random Plaintexts to Ciphertexts for $r$ rounds. 
-- `src/models.py`: Modular definitions of three Neural Network structures.
-- `src/train.py` & `src/eval.py`: Boilerplate loops for training the networks with Adam and BinaryCrossEntropy, and tracking metrics like Average Hamming Distance.
-- `src/main.py`: The entry-point orchestrator script executing training epochs across rounds 1 through 5.
-- `src/plot.py`: Takes the `results/metrics.json` outputs and creates publication-ready pyplot graphs.
-- `results/`: Contains saved `.pt` models, JSON metrics, and the output `plots`.
-- `report/`: Contains the IEEE format academic report detailing the project.
+By dynamically reducing the number of encryption rounds ($r \in [1, 5]$) for each cipher, we identify the threshold at which cryptographic diffusion and confusion completely confound standard neural architectures.
 
-## How To Run
-The project depends on `torch`, `numpy`, `matplotlib`, and `tqdm`. Running via `venv` on a Mac or Linux machine is recommended.
+## Supported Ciphers (12 Total)
+**Block Ciphers**
+- SIMON
+- SPECK
+- PRESENT
+- PRINCE
+- TEA
+- XTEA
+- RC5
+- KATAN
+- RECTANGLE
 
-1. **Setup the Virtual Environment & Dependencies:**
+**Stream Ciphers (adapted by keystream output XORed dynamically)**
+- ChaCha20
+- Salsa20
+- Trivium
+
+## Project Structure
+
+- `src/ciphers/`: Contains the 12 variable-round, bare-metal Python cipher implementations.
+- `src/dataset.py`: PyTorch dataset generator scaling dynamically for all block bit widths ($32$ to $512$ bit). 
+- `src/models.py`: Definitions for Logistic Regression, MLP, and 1D CNN models supporting variable input blocks.
+- `src/train.py`: The PyTorch training loop saving model checkpoints for the best validation accuracy.
+- `src/eval.py`: Calculates classification bitwise accuracy and normalized Hamming distance versus the true ciphertext labels.
+- `src/main.py`: The master orchestration script running the permutation pipeline (r=[1..5]) across all 12 ciphers concurrently.
+- `src/plot.py`: Generates aggregate comparative visualizations.
+- `results/`: Directory containing all serialized model `.pt` files, metrics JSON, and generated plots.
+- `report/`: A `.tex` academic report documenting the experimental findings and diffusion metrics.
+
+## Quickstart Guide
+
+### 1. Setup Virtual Environment
 ```bash
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-2. **Execute the Experiment Pipeline:**
-The main pipeline iterates through $r \in [1, 5]$, trains three distinct models, aggregates all evaluations, and saves them to `results/metrics.json`.
+### 2. Generate Data and Train Models
+Run the massive execution pipeline to evaluate the 12 ciphers concurrently across all rounds and models. Data generation and prediction metrics will be continually synchronized to `results/metrics.json`. Wait for it to complete.
+
 ```bash
-# Optional: Ensure the working directory is configured in PYTHONPATH
-PYTHONPATH=. python3 src/main.py
+export PYTHONPATH=.
+python3 src/main.py
 ```
 
-3. **Generate Plots:**
-Uses the JSON artifact to produce plots visualising learning degradation.
+### 3. Generate Comparative Plots
+Once the `results/metrics.json` is completely populated, generate the cross-cipher visualizations.
 ```bash
-PYTHONPATH=. python3 src/plot.py
+python3 src/plot.py
 ```
 
-## Results Overview
-The models learn 1-round efficiently. Deeper models (MLP, CNN) sustain functionality through round 2 and partially round 3. By round 4, the SIMON permutation becomes universally unlearnable under our constraints, representing the cipher's rapid diffusion wall where the models degenerate to random guessing.
+The comprehensive line plots isolating the precise moment ML model degradation hits exactly 50% random guessing accuracy per cipher will be saved to `results/plots/`.
+
+### 4. Compile Report (Optional)
+Requires a full LaTeX distribution (like MacTeX or TeX Live).
+```bash
+cd report/
+pdflatex report.tex
+```

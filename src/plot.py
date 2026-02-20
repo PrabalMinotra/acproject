@@ -1,78 +1,66 @@
 import json
 import matplotlib.pyplot as plt
 import os
+import numpy as np
 
-def generate_plots(metrics_file='results/metrics.json'):
-    with open(metrics_file, 'r') as f:
-        results = json.load(f)
+def generate_comparative_plots(metrics_path='results/metrics.json'):
+    with open(metrics_path, 'r') as f:
+        data = json.load(f)
         
-    rounds = sorted([int(r) for r in results.keys()])
-    models = list(results[str(rounds[0])].keys())
-    
     os.makedirs('results/plots', exist_ok=True)
     
-    # -------------------------------------------------------------------------
-    # Plot 1: Accuracy vs Rounds
-    # -------------------------------------------------------------------------
-    plt.figure(figsize=(10, 6))
-    for model in models:
-        accs = [results[str(r)][model]['test_acc'] for r in rounds]
-        plt.plot(rounds, accs, marker='o', label=model)
+    models = ['LogisticRegression', 'MLP', 'CNN']
+    ciphers = list(data.keys())
     
-    # 50% random guessing baseline
-    plt.axhline(y=0.5, color='r', linestyle='--', label='Random Guessing (50%)')
-    
-    plt.title('Prediction Accuracy vs. Number of Rounds for SIMON32/64')
-    plt.xlabel('Number of Rounds (r)')
-    plt.ylabel('Bitwise Accuracy')
-    plt.xticks(rounds)
-    plt.grid(True, alpha=0.3)
-    plt.legend()
-    plt.tight_layout()
-    plt.savefig('results/plots/accuracy_vs_rounds.png', dpi=300)
-    plt.close()
-    
-    # -------------------------------------------------------------------------
-    # Plot 2: Hamming Distance vs Rounds
-    # -------------------------------------------------------------------------
-    plt.figure(figsize=(10, 6))
-    for model in models:
-        hams = [results[str(r)][model]['avg_hamming'] for r in rounds]
-        plt.plot(rounds, hams, marker='v', label=model)
-        
-    # Random guessing expected Hamming Distance = 16 for 32-bit block
-    plt.axhline(y=16.0, color='r', linestyle='--', label='Random Guessing (16.0)')
-    
-    plt.title('Average Hamming Distance vs. Number of Rounds for SIMON32/64')
-    plt.xlabel('Number of Rounds (r)')
-    plt.ylabel('Hamming Distance')
-    plt.xticks(rounds)
-    plt.grid(True, alpha=0.3)
-    plt.legend()
-    plt.tight_layout()
-    plt.savefig('results/plots/hamming_dist_vs_rounds.png', dpi=300)
-    plt.close()
-    
-    # -------------------------------------------------------------------------
-    # Plot 3: Training Loss vs Epochs
-    # -------------------------------------------------------------------------
-    for model in models:
-        plt.figure(figsize=(10, 6))
+    # 1. Comparative Accuracy Plot across all 12 ciphers (Using MLP as best case representation)
+    plt.figure(figsize=(14, 8))
+    for cipher in ciphers:
+        rounds = sorted([int(r) for r in data[cipher].keys()])
+        accs = []
         for r in rounds:
-            history = results[str(r)][model]['history']['train_loss']
-            epochs = list(range(1, len(history) + 1))
-            plt.plot(epochs, history, label=f'r={r}')
+            # Let's track the best performing model (usually CNN or MLP)
+            best_acc = max([data[cipher][str(r)][m]['test_acc'] for m in models])
+            accs.append(best_acc)
             
-        plt.title(f'{model} Training Loss vs. Epochs')
-        plt.xlabel('Epoch')
-        plt.ylabel('BCE Loss')
-        plt.grid(True, alpha=0.3)
-        plt.legend()
-        plt.tight_layout()
-        plt.savefig(f'results/plots/loss_vs_epochs_{model}.png', dpi=300)
-        plt.close()
+        plt.plot(rounds, accs, marker='o', label=cipher.upper())
         
-    print("Plots successfully generated in results/plots/!")
+    plt.axhline(y=0.5, color='r', linestyle='--', label='Random Guessing (50%)')
+    plt.axhline(y=1.0, color='g', linestyle='--', label='Perfect Reconstruction (100%)')
+    plt.title('Best Model Accuracy vs. Number of Rounds Across 12 Ciphers')
+    plt.xlabel('Number of Rounds (r)')
+    plt.ylabel('Bitwise Prediction Accuracy')
+    plt.xticks(range(1, 6))
+    plt.grid(True)
+    plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+    plt.tight_layout()
+    plt.savefig('results/plots/all_ciphers_accuracy.png', dpi=300)
+    plt.close()
+    
+    # 2. Diffusion / Hamming Distance plot
+    plt.figure(figsize=(14, 8))
+    for cipher in ciphers:
+        rounds = sorted([int(r) for r in data[cipher].keys()])
+        h_dists = []
+        # Normalizing Hamming distance by block size to make comparative plotting feasible
+        for r in rounds:
+            block_size = data[cipher][str(r)][models[0]]['block_size']
+            # Best model (closest hamming distance to 0, though when random it approaches 0.5 * block_size)
+            best_h_dist = min([data[cipher][str(r)][m]['avg_hamming'] for m in models])
+            h_dists.append(best_h_dist / block_size) # Normalize to % of block
+            
+        plt.plot(rounds, h_dists, marker='^', label=cipher.upper())
+        
+    plt.axhline(y=0.5, color='r', linestyle='--', label='Random Chance (50% bits differ)')
+    plt.title('Normalized Hamming Distance vs. Number of Rounds Across 12 Ciphers')
+    plt.xlabel('Number of Rounds (r)')
+    plt.ylabel('Normalized Hamming Distance (Distance / Block Size)')
+    plt.xticks(range(1, 6))
+    plt.grid(True)
+    plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+    plt.tight_layout()
+    plt.savefig('results/plots/all_ciphers_hamming_distance.png', dpi=300)
+    plt.close()
 
-if __name__ == '__main__':
-    generate_plots()
+if __name__ == "__main__":
+    generate_comparative_plots()
+    print("Aggregate plots saved to results/plots/")
