@@ -1,0 +1,222 @@
+{
+    "1": {
+        "full": {
+            "MLP": {
+                "acc": 0.5625,
+                "hamming": 14.0,
+                "output_size": 32,
+                "block_size": 32
+            },
+            "CNN": {
+                "acc": 0.6203125,
+                "hamming": 12.15,
+                "output_size": 32,
+                "block_size": 32
+            }
+        },
+        "left": {
+            "MLP": {
+                "acc": 0.48125,
+                "hamming": 8.3,
+                "output_size": 16,
+                "block_size": 32
+            },
+            "CNN": {
+                "acc": 0.50625,
+                "hamming": 7.9,
+                "output_size": 16,
+                "block_size": 32
+            }
+        },
+        "right": {
+            "MLP": {
+                "acc": 0.6296875,
+                "hamming": 5.925,
+                "output_size": 16,
+                "block_size": 32
+            },
+            "CNN": {
+                "acc": 0.7140625,
+                "hamming": 4.575,
+                "output_size": 16,
+                "block_size": 32
+            }
+        }
+    },
+    "2": {
+        "full": {
+            "MLP": {
+                "acc": 0.4875,
+                "hamming": 16.4,
+                "output_size": 32,
+                "block_size": 32
+            },
+            "CNN": {
+                "acc": 0.51484375,
+                "hamming": 15.525,
+                "output_size": 32,
+                "block_size": 32
+            }
+        },
+        "left": {
+            "MLP": {
+                "acc": 0.4640625,
+                "hamming": 8.575,
+                "output_size": 16,
+                "block_size": 32
+            },
+            "CNN": {
+                "acc": 0.4875,
+                "hamming": 8.2,
+                "output_size": 16,
+                "block_size": 32
+            }
+        },
+        "right": {
+            "MLP": {
+                "acc": 0.515625,
+                "hamming": 7.75,
+                "output_size": 16,
+                "block_size": 32
+            },
+            "CNN": {
+                "acc": 0.490625,
+                "hamming": 8.15,
+                "output_size": 16,
+                "block_size": 32
+            }
+        }
+    },
+    "3": {
+        "full": {
+            "MLP": {
+                "acc": 0.496875,
+                "hamming": 16.1,
+                "output_size": 32,
+                "block_size": 32
+            },
+            "CNN": {
+                "acc": 0.51484375,
+                "hamming": 15.525,
+                "output_size": 32,
+                "block_size": 32
+            }
+        },
+        "left": {
+            "MLP": {
+                "acc": 0.4765625,
+                "hamming": 8.375,
+                "output_size": 16,
+                "block_size": 32
+            },
+            "CNN": {
+                "acc": 0.4984375,
+                "hamming": 8.025,
+                "output_size": 16,
+                "block_size": 32
+            }
+        },
+        "right": {
+            "MLP": {
+                "acc": 0.5,
+                "hamming": 8.0,
+                "output_size": 16,
+                "block_size": 32
+            },
+            "CNN": {
+                "acc": 0.4921875,
+                "hamming": 8.125,
+                "output_size": 16,
+                "block_size": 32
+            }
+        }
+    },
+    "4": {
+        "full": {
+            "MLP": {
+                "acc": 0.50390625,
+                "hamming": 15.875,
+                "output_size": 32,
+                "block_size": 32
+            },
+            "CNN": {
+                "acc": 0.4921875,
+                "hamming": 16.25,
+                "output_size": 32,
+                "block_size": 32
+            }
+        },
+        "left": {
+            "MLP": {
+                "acc": 0.5078125,
+                "hamming": 7.875,
+                "output_size": 16,
+                "block_size": 32
+            },
+            "CNN": {
+                "acc": 0.5125,
+                "hamming": 7.8,
+                "output_size": 16,
+                "block_size": 32
+            }
+        },
+        "right": {
+            "MLP": {
+                "acc": 0.5015625,
+                "hamming": 7.975,
+                "output_size": 16,
+                "block_size": 32
+            },
+            "CNN": {
+                "acc": 0.5140625,
+                "hamming": 7.775,
+                "output_size": 16,
+                "block_size": 32
+            }
+        }
+    },
+    "5": {
+        "full": {
+            "MLP": {
+                "acc": 0.51171875,
+                "hamming": 15.625,
+                "output_size": 32,
+                "block_size": 32
+            },
+            "CNN": {
+                "acc": 0.4828125,
+                "hamming": 16.55,
+                "output_size": 32,
+                "block_size": 32
+            }
+        },
+        "left": {
+            "MLP": {
+                "acc": 0.4953125,
+                "hamming": 8.075,
+                "output_size": 16,
+                "block_size": 32
+            },
+            "CNN": {
+                "acc": 0.5046875,
+                "hamming": 7.925,
+                "output_size": 16,
+                "block_size": 32
+            }
+        },
+        "right": {
+            "MLP": {
+                "acc": 0.5046875,
+                "hamming": 7.925,
+                "output_size": 16,
+                "block_size": 32
+            },
+            "CNN": {
+                "acc": 0.525,
+                "hamming": 7.6,
+                "output_size": 16,
+                "block_size": 32
+            }
+        }
+    }
+}

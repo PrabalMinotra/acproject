@@ -1,0 +1,72 @@
+{
+    "1": {
+        "LR": {
+            "accuracy": 0.475,
+            "advantage": -0.050000000000000044
+        },
+        "MLP": {
+            "accuracy": 0.575,
+            "advantage": 0.1499999999999999
+        },
+        "CNN": {
+            "accuracy": 0.425,
+            "advantage": -0.15000000000000002
+        }
+    },
+    "2": {
+        "LR": {
+            "accuracy": 0.375,
+            "advantage": -0.25
+        },
+        "MLP": {
+            "accuracy": 0.525,
+            "advantage": 0.050000000000000044
+        },
+        "CNN": {
+            "accuracy": 0.575,
+            "advantage": 0.1499999999999999
+        }
+    },
+    "3": {
+        "LR": {
+            "accuracy": 0.375,
+            "advantage": -0.25
+        },
+        "MLP": {
+            "accuracy": 0.475,
+            "advantage": -0.050000000000000044
+        },
+        "CNN": {
+            "accuracy": 0.475,
+            "advantage": -0.050000000000000044
+        }
+    },
+    "4": {
+        "LR": {
+            "accuracy": 0.425,
+            "advantage": -0.15000000000000002
+        },
+        "MLP": {
+            "accuracy": 0.55,
+            "advantage": 0.10000000000000009
+        },
+        "CNN": {
+            "accuracy": 0.45,
+            "advantage": -0.09999999999999998
+        }
+    },
+    "5": {
+        "LR": {
+            "accuracy": 0.575,
+            "advantage": 0.1499999999999999
+        },
+        "MLP": {
+            "accuracy": 0.475,
+            "advantage": -0.050000000000000044
+        },
+        "CNN": {
+            "accuracy": 0.45,
+            "advantage": -0.09999999999999998
+        }
+    }
+}

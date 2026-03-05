@@ -99,3 +99,112 @@ def get_dataloaders(num_samples=100000, rounds=1, key=0x1918111009080100, cipher
     test_loader = torch.utils.data.DataLoader(test_ds, batch_size=batch_size, shuffle=False)
     
     return train_loader, val_loader, test_loader, full_dataset.block_size
+
+
+# ---------------------------------------------------------------------------
+# Bonus 1: Cross-key generalisation
+# ---------------------------------------------------------------------------
+
+def get_dataloaders_cross_key(
+    num_samples=10000,
+    rounds=1,
+    train_key=0x1918111009080100,
+    test_key=0xDEADBEEFCAFEBABE,
+    cipher_name='simon',
+    batch_size=1024,
+):
+    """Return train/val loaders from train_key and a separate test loader from test_key."""
+    train_full = CipherDataset(num_samples, rounds, train_key, cipher_name)
+    test_full  = CipherDataset(num_samples, rounds, test_key,  cipher_name)
+
+    block_size = train_full.block_size
+
+    # Train / Val from train key (80 / 20 split — no need for a separate val)
+    t_size = int(0.8 * num_samples)
+    v_size = num_samples - t_size
+    train_ds, val_ds = torch.utils.data.random_split(
+        train_full, [t_size, v_size],
+        generator=torch.Generator().manual_seed(42)
+    )
+
+    # Test from train_key (same-key evaluation)
+    same_key_test_full = CipherDataset(num_samples // 5, rounds, train_key, cipher_name)
+
+    train_loader     = torch.utils.data.DataLoader(train_ds,           batch_size=batch_size, shuffle=True)
+    val_loader       = torch.utils.data.DataLoader(val_ds,             batch_size=batch_size, shuffle=False)
+    same_key_loader  = torch.utils.data.DataLoader(same_key_test_full, batch_size=batch_size, shuffle=False)
+    cross_key_loader = torch.utils.data.DataLoader(test_full,          batch_size=batch_size, shuffle=False)
+
+    return train_loader, val_loader, same_key_loader, cross_key_loader, block_size
+
+
+# ---------------------------------------------------------------------------
+# Bonus 2: Partial output learning
+# ---------------------------------------------------------------------------
+
+class CipherDatasetPartial(Dataset):
+    """Like CipherDataset but exposes only a slice of the ciphertext bits."""
+
+    def __init__(self, num_samples, rounds, key, cipher_name, output_slice='full'):
+        """
+        output_slice:
+            'full'  – all block_size bits (default)
+            'left'  – upper half (word_size bits, MSBs)
+            'right' – lower half (word_size bits, LSBs)
+        """
+        # Build the underlying cipher dataset
+        self._base = CipherDataset(num_samples, rounds, key, cipher_name)
+        self.block_size = self._base.block_size
+        self.output_slice = output_slice
+
+        # Determine output_size (bits we actually expose)
+        if output_slice == 'full':
+            self.output_size = self.block_size
+            self._start = 0
+            self._end   = self.block_size
+        elif output_slice == 'left':
+            half = self.block_size // 2
+            self.output_size = half
+            self._start = 0
+            self._end   = half
+        elif output_slice == 'right':
+            half = self.block_size // 2
+            self.output_size = half
+            self._start = half
+            self._end   = self.block_size
+        else:
+            raise ValueError(f"Unknown output_slice: {output_slice!r}. Use 'full', 'left', or 'right'.")
+
+    def __len__(self):
+        return len(self._base)
+
+    def __getitem__(self, idx):
+        pt_bits, ct_bits = self._base[idx]
+        return pt_bits, ct_bits[self._start:self._end]
+
+
+def get_dataloaders_partial(
+    num_samples=10000,
+    rounds=1,
+    key=0x1918111009080100,
+    cipher_name='simon',
+    output_slice='full',
+    batch_size=1024,
+):
+    """Dataloaders where the model only needs to predict a slice of ciphertext bits."""
+    full_dataset = CipherDatasetPartial(num_samples, rounds, key, cipher_name, output_slice)
+
+    train_size = int(0.8 * num_samples)
+    val_size   = int(0.1 * num_samples)
+    test_size  = num_samples - train_size - val_size
+
+    train_ds, val_ds, test_ds = torch.utils.data.random_split(
+        full_dataset, [train_size, val_size, test_size],
+        generator=torch.Generator().manual_seed(42)
+    )
+
+    train_loader = torch.utils.data.DataLoader(train_ds, batch_size=batch_size, shuffle=True)
+    val_loader   = torch.utils.data.DataLoader(val_ds,   batch_size=batch_size, shuffle=False)
+    test_loader  = torch.utils.data.DataLoader(test_ds,  batch_size=batch_size, shuffle=False)
+
+    return train_loader, val_loader, test_loader, full_dataset.block_size, full_dataset.output_size

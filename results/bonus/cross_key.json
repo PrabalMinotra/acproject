@@ -1,0 +1,177 @@
+{
+    "1": {
+        "LR": {
+            "same_key": {
+                "acc": 0.491796875,
+                "hamming": 16.2625
+            },
+            "cross_key": {
+                "acc": 0.507890625,
+                "hamming": 15.7475
+            },
+            "acc_drop": -0.016093750000000018
+        },
+        "MLP": {
+            "same_key": {
+                "acc": 0.57890625,
+                "hamming": 13.475
+            },
+            "cross_key": {
+                "acc": 0.55703125,
+                "hamming": 14.175
+            },
+            "acc_drop": 0.021874999999999978
+        },
+        "CNN": {
+            "same_key": {
+                "acc": 0.680859375,
+                "hamming": 10.2125
+            },
+            "cross_key": {
+                "acc": 0.618515625,
+                "hamming": 12.2075
+            },
+            "acc_drop": 0.06234375000000003
+        }
+    },
+    "2": {
+        "LR": {
+            "same_key": {
+                "acc": 0.4796875,
+                "hamming": 16.65
+            },
+            "cross_key": {
+                "acc": 0.50265625,
+                "hamming": 15.915
+            },
+            "acc_drop": -0.022968750000000038
+        },
+        "MLP": {
+            "same_key": {
+                "acc": 0.529296875,
+                "hamming": 15.0625
+            },
+            "cross_key": {
+                "acc": 0.4803125,
+                "hamming": 16.63
+            },
+            "acc_drop": 0.048984375000000024
+        },
+        "CNN": {
+            "same_key": {
+                "acc": 0.556640625,
+                "hamming": 14.1875
+            },
+            "cross_key": {
+                "acc": 0.4840625,
+                "hamming": 16.51
+            },
+            "acc_drop": 0.072578125
+        }
+    },
+    "3": {
+        "LR": {
+            "same_key": {
+                "acc": 0.505859375,
+                "hamming": 15.8125
+            },
+            "cross_key": {
+                "acc": 0.503203125,
+                "hamming": 15.8975
+            },
+            "acc_drop": 0.0026562500000000266
+        },
+        "MLP": {
+            "same_key": {
+                "acc": 0.527734375,
+                "hamming": 15.1125
+            },
+            "cross_key": {
+                "acc": 0.496484375,
+                "hamming": 16.1125
+            },
+            "acc_drop": 0.03125
+        },
+        "CNN": {
+            "same_key": {
+                "acc": 0.54296875,
+                "hamming": 14.625
+            },
+            "cross_key": {
+                "acc": 0.498125,
+                "hamming": 16.06
+            },
+            "acc_drop": 0.044843750000000016
+        }
+    },
+    "4": {
+        "LR": {
+            "same_key": {
+                "acc": 0.494140625,
+                "hamming": 16.1875
+            },
+            "cross_key": {
+                "acc": 0.500078125,
+                "hamming": 15.9975
+            },
+            "acc_drop": -0.00593750000000004
+        },
+        "MLP": {
+            "same_key": {
+                "acc": 0.507421875,
+                "hamming": 15.7625
+            },
+            "cross_key": {
+                "acc": 0.503515625,
+                "hamming": 15.8875
+            },
+            "acc_drop": 0.00390625
+        },
+        "CNN": {
+            "same_key": {
+                "acc": 0.5375,
+                "hamming": 14.8
+            },
+            "cross_key": {
+                "acc": 0.506875,
+                "hamming": 15.78
+            },
+            "acc_drop": 0.030625000000000013
+        }
+    },
+    "5": {
+        "LR": {
+            "same_key": {
+                "acc": 0.498046875,
+                "hamming": 16.0625
+            },
+            "cross_key": {
+                "acc": 0.49671875,
+                "hamming": 16.105
+            },
+            "acc_drop": 0.0013281250000000133
+        },
+        "MLP": {
+            "same_key": {
+                "acc": 0.5046875,
+                "hamming": 15.85
+            },
+            "cross_key": {
+                "acc": 0.494921875,
+                "hamming": 16.1625
+            },
+            "acc_drop": 0.009765624999999944
+        },
+        "CNN": {
+            "same_key": {
+                "acc": 0.584765625,
+                "hamming": 13.2875
+            },
+            "cross_key": {
+                "acc": 0.50328125,
+                "hamming": 15.895
+            },
+            "acc_drop": 0.08148437499999994
+        }
+    }
+}
