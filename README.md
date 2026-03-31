@@ -63,6 +63,7 @@ Bonus outputs are written to bonus/results and bonus data caches live in bonus/d
 Step-by-step run (PowerShell)
 
 ```
+python -m venv venv
 .\.venv\Scripts\Activate.ps1
 python -m src.main
 python -m src.plot
