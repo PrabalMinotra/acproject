@@ -6,7 +6,7 @@
     "per_cipher": {
         "simon": {
             "models": {
-                "LogisticRegression": 1,
+                "LogisticRegression": null,
                 "MLP": 2,
                 "CNN": 2
             },
@@ -83,8 +83,8 @@
         },
         "katan": {
             "models": {
-                "LogisticRegression": 9,
-                "MLP": 20,
+                "LogisticRegression": 8,
+                "MLP": 19,
                 "CNN": 20
             },
             "best_model": {
@@ -99,7 +99,7 @@
                 "CNN": 1
             },
             "best_model": {
-                "model": "CNN",
+                "model": "MLP",
                 "max_round": 1
             }
         },
@@ -128,12 +128,12 @@
         "trivium": {
             "models": {
                 "LogisticRegression": null,
-                "MLP": 20,
-                "CNN": 20
+                "MLP": null,
+                "CNN": null
             },
             "best_model": {
-                "model": "MLP",
-                "max_round": 20
+                "model": null,
+                "max_round": null
             }
         }
     }

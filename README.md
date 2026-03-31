@@ -1,11 +1,14 @@
-# Learning Reduced-Round Cipher Behavior using Machine Learning
+# Learning Reduced-Round Cipher Behavior Using Machine Learning
 
-This repository investigates the boundary condition where machine learning models (Logistic Regression, Multi-Layer Perceptrons, Convolutional Neural Networks) fail to approximate the behavior of 12 distinct lightweight cryptographic block and stream ciphers.
+This project analyzes how well common machine learning models can learn reduced-round
+lightweight ciphers, and identifies the round depth where learning collapses to chance.
+It runs controlled experiments across 12 ciphers and records bitwise accuracy and
+normalized Hamming distance as rounds increase.
 
-By dynamically reducing the number of encryption rounds ($r \in [1, 5]$) for each cipher, we identify the threshold at which cryptographic diffusion and confusion completely confound standard neural architectures.
+Supported ciphers (12 total)
 
-## Supported Ciphers (12 Total)
-**Block Ciphers**
+Block ciphers
+
 - SIMON
 - SPECK
 - PRESENT
@@ -16,53 +19,56 @@ By dynamically reducing the number of encryption rounds ($r \in [1, 5]$) for eac
 - KATAN
 - RECTANGLE
 
-**Stream Ciphers (adapted by keystream output XORed dynamically)**
+Stream ciphers (adapted as keystream XOR with plaintext)
+
 - ChaCha20
 - Salsa20
 - Trivium
 
-Implementation note: 11 ciphers are implemented as validated reference-style variants. PRINCE currently uses a structural reduced-round proxy intended for diffusion-learning experiments rather than a standards-validated drop-in implementation.
+Implementation note: PRINCE is implemented as a reduced-round structural proxy for
+diffusion-learning experiments rather than a standards-validated drop-in variant.
 
-## Project Structure
+Project layout
 
-- `src/ciphers/`: Contains the 12 variable-round, bare-metal Python cipher implementations.
-- `src/dataset.py`: PyTorch dataset generator scaling dynamically for all block bit widths ($32$ to $512$ bit). 
-- `src/models.py`: Definitions for Logistic Regression, MLP, and 1D CNN models supporting variable input blocks.
-- `src/train.py`: The PyTorch training loop saving model checkpoints for the best validation accuracy.
-- `src/eval.py`: Calculates classification bitwise accuracy and normalized Hamming distance versus the true ciphertext labels.
-- `src/main.py`: The master orchestration script running the permutation pipeline (r=[1..5]) across all 12 ciphers concurrently.
-- `src/plot.py`: Generates aggregate comparative visualizations.
-- `results/`: Directory containing all serialized model `.pt` files, metrics JSON, and generated plots.
-- `report/`: A `.tex` academic report documenting the experimental findings and diffusion metrics.
+- src/ciphers/: reference-style cipher implementations with variable rounds
+- src/dataset.py: plaintext/ciphertext dataset generation and masking logic
+- src/models.py: Logistic Regression, MLP, and 1D CNN models
+- src/train.py: training loop with masked BCE loss and checkpointing
+- src/eval.py: bitwise accuracy and average Hamming distance evaluation
+- src/main.py: main experiment runner across ciphers/rounds/models
+- src/plot.py: comparative plots and summary exports
+- results/: checkpoints, logs, metrics, and plots
+- report/: LaTeX report
+- bonus/: optional extensions described below
 
-## Quickstart Guide
+Results and artifacts
 
-### 1. Setup Virtual Environment
-```bash
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
+- results/metrics.json: per-cipher metrics by round and model
+- results/models/: model checkpoints
+- results/logs/: training logs
+- results/plots/: aggregate figures
+
+Bonus extensions
+
+- Key generalization: train on one key, test on another (defaults to SIMON and KATAN)
+- Partial output learning: predict only one 16-bit word of SIMON32/64 (left and right)
+- Distinguisher setup: binary real-vs-random classifier on (PT || CT)
+
+Bonus outputs are written to bonus/results and bonus data caches live in bonus/data.
+
+Step-by-step run (PowerShell)
+
+```
+.\.venv\Scripts\Activate.ps1
+python -m src.main
+python -m src.plot
+python -m bonus.key_generalization
+python -m bonus.distinguisher
+python -m bonus.partial_output
+deactivate
 ```
 
-### 2. Generate Data and Train Models
-Run the massive execution pipeline to evaluate the 12 ciphers concurrently across all rounds and models. Data generation and prediction metrics will be continually synchronized to `results/metrics.json`. Wait for it to complete.
+Notes
 
-```bash
-export PYTHONPATH=.
-python3 src/main.py
-```
-
-### 3. Generate Comparative Plots
-Once the `results/metrics.json` is completely populated, generate the cross-cipher visualizations.
-```bash
-python3 src/plot.py
-```
-
-The comprehensive line plots isolating the precise moment ML model degradation hits exactly 50% random guessing accuracy per cipher will be saved to `results/plots/`.
-
-### 4. Compile Report (Optional)
-Requires a full LaTeX distribution (like MacTeX or TeX Live).
-```bash
-cd report/
-pdflatex report.tex
-```
+- The bonus scripts are isolated from the main results; clearing bonus/data is
+  enough to refresh bonus datasets.
