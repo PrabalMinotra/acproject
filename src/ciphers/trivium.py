@@ -6,6 +6,7 @@ class TriviumCipher:
         self.rounds = 1152 
 
         self.iv_bits = 80
+        self.header_bits = self.iv_bits
         self.message_bits = self.block_size - self.iv_bits
         
         self.init_key = key
