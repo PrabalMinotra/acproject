@@ -2,10 +2,10 @@
 
 This project analyzes how well common machine learning models can learn reduced-round
 lightweight ciphers, and identifies the round depth where learning collapses to chance.
-It runs controlled experiments across 12 ciphers and records bitwise accuracy and
+It runs controlled experiments across 16 ciphers and records bitwise accuracy and
 normalized Hamming distance as rounds increase.
 
-Supported ciphers (12 total)
+Supported ciphers (16 total)
 
 Block ciphers
 
@@ -18,6 +18,10 @@ Block ciphers
 - RC5
 - KATAN
 - RECTANGLE
+- CHAM
+- HIGHT
+- LEA
+- SIMECK
 
 Stream ciphers (adapted as keystream XOR with plaintext)
 

@@ -17,6 +17,10 @@ from src.ciphers.rectangle import RectangleCipher
 from src.ciphers.chacha20 import ChaCha20Cipher
 from src.ciphers.salsa20 import Salsa20Cipher
 from src.ciphers.trivium import TriviumCipher
+from src.ciphers.cham import ChamCipher
+from src.ciphers.hight import HightCipher
+from src.ciphers.lea import LeaCipher
+from src.ciphers.simeck import SimeckCipher
 
 CIPHER_MAP = {
     'simon': SimonCipher,
@@ -30,7 +34,11 @@ CIPHER_MAP = {
     'rectangle': RectangleCipher,
     'chacha20': ChaCha20Cipher,
     'salsa20': Salsa20Cipher,
-    'trivium': TriviumCipher
+    'trivium': TriviumCipher,
+    'cham': ChamCipher,
+    'hight': HightCipher,
+    'lea': LeaCipher,
+    'simeck': SimeckCipher
 }
 
 def int_to_bit_array(val, bits):

@@ -37,7 +37,7 @@ def generate_comparative_plots(metrics_path='results/metrics.json'):
         
     plt.axhline(y=0.5, color='r', linestyle='--', label='Random Guessing (50%)')
     plt.axhline(y=1.0, color='g', linestyle='--', label='Perfect Reconstruction (100%)')
-    plt.title('Best Model Accuracy vs. Number of Rounds Across 12 Ciphers')
+    plt.title('Best Model Accuracy vs. Number of Rounds Across 16 Ciphers')
     plt.xlabel('Number of Rounds (r)')
     plt.ylabel('Bitwise Prediction Accuracy')
     ticks = build_ticks([int(r) for cipher in ciphers for r in data[cipher].keys()])
@@ -65,7 +65,7 @@ def generate_comparative_plots(metrics_path='results/metrics.json'):
         plt.plot(rounds, h_dists, marker='^', label=cipher.upper())
         
     plt.axhline(y=0.5, color='r', linestyle='--', label='Random Chance (50% bits differ)')
-    plt.title('Normalized Hamming Distance vs. Number of Rounds Across 12 Ciphers')
+    plt.title('Normalized Hamming Distance vs. Number of Rounds Across 16 Ciphers')
     plt.xlabel('Number of Rounds (r)')
     plt.ylabel('Normalized Hamming Distance (Distance / Output Bits)')
     if ticks:
@@ -192,4 +192,4 @@ if __name__ == "__main__":
         acc_threshold=args.acc_threshold,
         hamming_threshold=args.hamming_threshold
     )
-    print("Plots and summaries saved to results/")
+    print("Plots and summaries saved to results")

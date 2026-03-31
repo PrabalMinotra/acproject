@@ -11,7 +11,8 @@ from src.eval import evaluate_model
 
 CIPHERS = [
     'simon', 'speck', 'present', 'prince', 'tea', 'xtea', 
-    'rc5', 'katan', 'rectangle', 'chacha20', 'salsa20', 'trivium'
+    'rc5', 'katan', 'rectangle', 'chacha20', 'salsa20', 'trivium',
+    'cham', 'hight', 'lea', 'simeck'
 ]
 
 def run_experiments(
@@ -107,7 +108,7 @@ def run_experiments(
                     print(f"Stopping {cipher_name.upper()} after r={r} (no meaningful learning).")
                     break
                     
-    print("\nAll 12 Cipher experiments completed and metrics saved! Results are in results/metrics.json")
+    print("\nAll 16 Cipher experiments completed and metrics saved! Results are in results/metrics.json")
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Run reduced-round cipher experiments.')

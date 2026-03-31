@@ -6,7 +6,7 @@
     "per_cipher": {
         "simon": {
             "models": {
-                "LogisticRegression": null,
+                "LogisticRegression": 1,
                 "MLP": 2,
                 "CNN": 2
             },
@@ -83,7 +83,7 @@
         },
         "katan": {
             "models": {
-                "LogisticRegression": 8,
+                "LogisticRegression": 9,
                 "MLP": 19,
                 "CNN": 20
             },
@@ -99,7 +99,7 @@
                 "CNN": 1
             },
             "best_model": {
-                "model": "MLP",
+                "model": "CNN",
                 "max_round": 1
             }
         },
@@ -134,6 +134,50 @@
             "best_model": {
                 "model": null,
                 "max_round": null
+            }
+        },
+        "cham": {
+            "models": {
+                "LogisticRegression": 2,
+                "MLP": 3,
+                "CNN": 3
+            },
+            "best_model": {
+                "model": "CNN",
+                "max_round": 3
+            }
+        },
+        "hight": {
+            "models": {
+                "LogisticRegression": 1,
+                "MLP": 1,
+                "CNN": 1
+            },
+            "best_model": {
+                "model": "CNN",
+                "max_round": 1
+            }
+        },
+        "lea": {
+            "models": {
+                "LogisticRegression": null,
+                "MLP": 1,
+                "CNN": 1
+            },
+            "best_model": {
+                "model": "MLP",
+                "max_round": 1
+            }
+        },
+        "simeck": {
+            "models": {
+                "LogisticRegression": 1,
+                "MLP": 2,
+                "CNN": 2
+            },
+            "best_model": {
+                "model": "CNN",
+                "max_round": 2
             }
         }
     }
