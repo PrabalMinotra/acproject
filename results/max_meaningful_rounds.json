@@ -1,0 +1,140 @@
+{
+    "thresholds": {
+        "acc": 0.55,
+        "norm_hamming": 0.45
+    },
+    "per_cipher": {
+        "simon": {
+            "models": {
+                "LogisticRegression": 1,
+                "MLP": 2,
+                "CNN": 2
+            },
+            "best_model": {
+                "model": "CNN",
+                "max_round": 2
+            }
+        },
+        "speck": {
+            "models": {
+                "LogisticRegression": null,
+                "MLP": 1,
+                "CNN": 1
+            },
+            "best_model": {
+                "model": "CNN",
+                "max_round": 1
+            }
+        },
+        "present": {
+            "models": {
+                "LogisticRegression": 1,
+                "MLP": 1,
+                "CNN": 2
+            },
+            "best_model": {
+                "model": "CNN",
+                "max_round": 2
+            }
+        },
+        "prince": {
+            "models": {
+                "LogisticRegression": null,
+                "MLP": null,
+                "CNN": null
+            },
+            "best_model": {
+                "model": null,
+                "max_round": null
+            }
+        },
+        "tea": {
+            "models": {
+                "LogisticRegression": null,
+                "MLP": null,
+                "CNN": null
+            },
+            "best_model": {
+                "model": null,
+                "max_round": null
+            }
+        },
+        "xtea": {
+            "models": {
+                "LogisticRegression": null,
+                "MLP": null,
+                "CNN": null
+            },
+            "best_model": {
+                "model": null,
+                "max_round": null
+            }
+        },
+        "rc5": {
+            "models": {
+                "LogisticRegression": null,
+                "MLP": null,
+                "CNN": null
+            },
+            "best_model": {
+                "model": null,
+                "max_round": null
+            }
+        },
+        "katan": {
+            "models": {
+                "LogisticRegression": 9,
+                "MLP": 20,
+                "CNN": 20
+            },
+            "best_model": {
+                "model": "CNN",
+                "max_round": 20
+            }
+        },
+        "rectangle": {
+            "models": {
+                "LogisticRegression": null,
+                "MLP": 1,
+                "CNN": 1
+            },
+            "best_model": {
+                "model": "CNN",
+                "max_round": 1
+            }
+        },
+        "chacha20": {
+            "models": {
+                "LogisticRegression": null,
+                "MLP": null,
+                "CNN": null
+            },
+            "best_model": {
+                "model": null,
+                "max_round": null
+            }
+        },
+        "salsa20": {
+            "models": {
+                "LogisticRegression": null,
+                "MLP": null,
+                "CNN": null
+            },
+            "best_model": {
+                "model": null,
+                "max_round": null
+            }
+        },
+        "trivium": {
+            "models": {
+                "LogisticRegression": null,
+                "MLP": 20,
+                "CNN": 20
+            },
+            "best_model": {
+                "model": "MLP",
+                "max_round": 20
+            }
+        }
+    }
+}
