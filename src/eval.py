@@ -8,18 +8,27 @@ def evaluate_model(model, test_loader, device='cpu'):
     total_bits = 0
     total_hamming_dist = 0.0
     
+    def unpack_batch(batch):
+        if len(batch) == 3:
+            return batch
+        pt, ct = batch
+        mask = torch.ones_like(ct)
+        return pt, ct, mask
+
     with torch.no_grad():
-        for pt, ct in test_loader:
-            pt, ct = pt.to(device), ct.to(device)
+        for batch in test_loader:
+            pt, ct, mask = unpack_batch(batch)
+            pt, ct, mask = pt.to(device), ct.to(device), mask.to(device)
             outputs = model(pt)
             preds = (outputs > 0).float()
             
-            # Bitwise prediction accuracy
-            correct_bits += (preds == ct).sum().item()
-            total_bits += ct.numel()
             
-            # Hamming distance per sample: sum of differing bits
-            hamming_dists = (preds != ct).sum(dim=1).float()
+            correct_bits += ((preds == ct).float() * mask).sum().item()
+            total_bits += mask.sum().item()
+            
+            
+            diff = (preds != ct).float() * mask
+            hamming_dists = diff.sum(dim=1).float()
             total_hamming_dist += hamming_dists.sum().item()
             
     num_samples = len(test_loader.dataset)

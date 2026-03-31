@@ -2,7 +2,7 @@ from __future__ import print_function
 from collections import deque
 
 class SimonCipher(object):
-    """Simon 32/64 Block Cipher Object"""
+    
     z0 = 0b01100111000011010100100010111110110011100001101010010001011111
 
     def __init__(self, key):

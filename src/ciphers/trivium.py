@@ -1,31 +1,31 @@
 class TriviumCipher:
-    """Trivium Stream Cipher
-    80-bit Key, 80-bit IV.
-    """
+    
     def __init__(self, key):
-        self.block_size = 64 # Expose 64 bit chunks like block ciphers
+        self.block_size = 512 
         self.key_size = 80
-        self.rounds = 1152 # Setup rounds
+        self.rounds = 1152 
+
+        self.iv_bits = 80
+        self.message_bits = self.block_size - self.iv_bits
         
         self.init_key = key
-        self.init_iv = 0
-        
-    def _init_state(self, rounds):
+
+    def _init_state(self, rounds, iv):
         state = [0] * 288
         
-        # Load Key into 1..80
+        
         for i in range(80):
             state[i] = (self.init_key >> i) & 1
             
-        # Load IV into 94..173
+        
         for i in range(80):
-            state[93 + i] = (self.init_iv >> i) & 1
+            state[93 + i] = (iv >> i) & 1
             
         state[285] = 1
         state[286] = 1
         state[287] = 1
         
-        # Clock initialization rounds
+        
         for _ in range(rounds):
             t1 = state[65] ^ state[92]
             t2 = state[161] ^ state[176]
@@ -37,7 +37,7 @@ class TriviumCipher:
             t2 = t2 ^ (state[174] & state[175]) ^ state[263]
             t3 = t3 ^ (state[285] & state[286]) ^ state[68]
             
-            # Shift state
+            
             for i in range(287, 0, -1):
                 state[i] = state[i-1]
                 
@@ -47,8 +47,8 @@ class TriviumCipher:
             
         return state
         
-    def generate_keystream(self, setup_rounds, length_bits):
-        state = self._init_state(setup_rounds)
+    def generate_keystream(self, setup_rounds, length_bits, iv):
+        state = self._init_state(setup_rounds, iv)
         stream = 0
         
         for i in range(length_bits):
@@ -73,6 +73,18 @@ class TriviumCipher:
         return stream
 
     def encrypt(self, pt, rounds=None):
-        limit = rounds if rounds is not None else self.rounds # Initialization rounds
-        stream = self.generate_keystream(setup_rounds=limit, length_bits=64)
-        return pt ^ stream
+        limit = rounds if rounds is not None else self.rounds 
+        iv = pt & ((1 << self.iv_bits) - 1)
+        message = pt >> self.iv_bits
+
+        stream = self.generate_keystream(setup_rounds=limit, length_bits=self.message_bits, iv=iv)
+        message_mask = (1 << self.message_bits) - 1
+        cipher_message = (message ^ stream) & message_mask
+        return (cipher_message << self.iv_bits) | iv
+
+if __name__ == "__main__":
+    key = 0x00010203040506070809
+    pt = 0
+    ct = TriviumCipher(key).encrypt(pt)
+    assert ct == 0x46173B70E7D9EAC672E0CEB59FC2D1AE79E32C7B130B48A0046E65D3644133E808AACE8E96885F06FEF3C88472F2280547C9988C63A600000000000000000000, "Trivium regression test failed (self-generated)!"
+    print(f"Trivium regression test passed: 0x{ct:x}")

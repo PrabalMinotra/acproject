@@ -1,8 +1,5 @@
 class XTEACipher:
-    """XTEA Block Cipher
-    Block Size: 64 bits
-    Key Size: 128 bits
-    """
+    
     def __init__(self, key):
         self.block_size = 64
         self.key_size = 128
@@ -25,6 +22,8 @@ class XTEACipher:
         return (v0 << 32) | v1
 
 if __name__ == "__main__":
-    t = XTEACipher(0x0123456789abcdef0123456789abcdef)
-    ct = t.encrypt(0x0123456789abcdef)
-    print(f"XTEA Test: {hex(ct)}")
+    key = 0x0123456789ABCDEF0123456789ABCDEF
+    pt = 0x0123456789ABCDEF
+    ct = XTEACipher(key).encrypt(pt)
+    assert ct == 0x27E795E076B2B537, "XTEA regression test failed (self-generated)!"
+    print(f"XTEA regression test passed: 0x{ct:x}")

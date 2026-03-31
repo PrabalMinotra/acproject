@@ -21,6 +21,8 @@ By dynamically reducing the number of encryption rounds ($r \in [1, 5]$) for eac
 - Salsa20
 - Trivium
 
+Implementation note: 11 ciphers are implemented as validated reference-style variants. PRINCE currently uses a structural reduced-round proxy intended for diffusion-learning experiments rather than a standards-validated drop-in implementation.
+
 ## Project Structure
 
 - `src/ciphers/`: Contains the 12 variable-round, bare-metal Python cipher implementations.

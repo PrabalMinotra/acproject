@@ -1,5 +1,5 @@
 class SpeckCipher(object):
-    """Speck 32/64 Block Cipher Object"""
+    
 
     def __init__(self, key):
         self.block_size = 32
@@ -9,9 +9,10 @@ class SpeckCipher(object):
         
         self.mod_mask = (1 << self.word_size) - 1
         
-        # Validations
+        
         m = 4
-        self.beta_shift = 3
+        
+        self.beta_shift = 2
         self.alpha_shift = 7
 
         k = [(key >> (16 * i)) & self.mod_mask for i in range(m)]

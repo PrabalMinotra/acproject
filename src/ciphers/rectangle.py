@@ -1,8 +1,5 @@
 class RectangleCipher:
-    """RECTANGLE 64/128 Block Cipher
-    Block size: 64 bits
-    Key size: 128 bits
-    """
+    
     def __init__(self, key):
         self.block_size = 64
         self.key_size = 128
@@ -24,7 +21,7 @@ class RectangleCipher:
             k_round = [state_key[0], state_key[1], state_key[2], state_key[3]]
             self.key_schedule.append(k_round)
             
-            # SubColumn
+            
             for col in range(16):
                 val = 0
                 for row in range(4):
@@ -39,7 +36,7 @@ class RectangleCipher:
                     else:
                         state_key[row] &= ~(1 << col)
                         
-            # ShiftRow
+            
             state_key[0] = self.ROL(state_key[0], 8)
             state_key[1] = self.ROL(state_key[1], 12)
             state_key[2] = self.ROL(state_key[2], 12)
@@ -57,11 +54,11 @@ class RectangleCipher:
         state = [(pt >> (16 * i)) & 0xFFFF for i in range(4)]
         
         for i in range(limit):
-            # AddRoundKey
+            
             for row in range(4):
                 state[row] ^= self.key_schedule[i][row]
                 
-            # SubColumn
+            
             for col in range(16):
                 val = 0
                 for row in range(4):
@@ -76,7 +73,7 @@ class RectangleCipher:
                     else:
                         state[row] &= ~(1 << col)
             
-            # ShiftRow
+            
             state[1] = self.ROL(state[1], 1)
             state[2] = self.ROL(state[2], 12)
             state[3] = self.ROL(state[3], 13)
@@ -90,3 +87,10 @@ class RectangleCipher:
             final |= (state[i] << (16 * i))
             
         return final
+
+if __name__ == "__main__":
+    key = 0x000102030405060708090A0B0C0D0E0F
+    pt = 0x0123456789ABCDEF
+    ct = RectangleCipher(key).encrypt(pt)
+    assert ct == 0xB23B6C4441A05030, "RECTANGLE regression test failed (self-generated)!"
+    print(f"RECTANGLE regression test passed: 0x{ct:x}")

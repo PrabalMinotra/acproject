@@ -1,5 +1,5 @@
 class PresentCipher:
-    """PRESENT 64/80 Block Cipher"""
+    
     def __init__(self, key):
         self.block_size = 64
         self.key_size = 80
@@ -26,21 +26,21 @@ class PresentCipher:
         for i in range(limit):
             state ^= self.key_schedule[i]
             
-            # SBox
+            
             new_state = 0
             for j in range(16):
                 nibble = (state >> (j * 4)) & 0xF
                 new_state |= (self.Sbox[nibble] << (j * 4))
             state = new_state
             
-            # PBox
+            
             p_state = 0
             for j in range(64):
                 bit = (state >> j) & 1
                 p_state |= (bit << self.PBox[j])
             state = p_state
             
-        # Post-whitening if doing all rounds. For reduced rounds, we just return the state.
+        
         if limit == self.rounds:
             state ^= self.key_schedule[self.rounds]
 

@@ -1,10 +1,5 @@
 class RC5Cipher:
-    """RC5 32/12/16 Block Cipher
-    Word Size w = 32
-    Rounds r = 12
-    Key Bytes b = 16 (128 bits)
-    Block Size = 64
-    """
+    
     def __init__(self, key):
         self.w = 32
         self.rounds = 12
@@ -12,7 +7,7 @@ class RC5Cipher:
         self.block_size = 64
         self.mod = 2**32
         
-        # Magic constants for w=32
+        
         P = 0xb7e15163
         Q = 0x9e3779b9
         
@@ -52,6 +47,8 @@ class RC5Cipher:
         return (A << 32) | B
 
 if __name__ == "__main__":
-    r = RC5Cipher(0x00000000000000000000000000000000)
-    ct = r.encrypt(0x0000000000000000)
-    print(f"RC5 Test: {hex(ct)}")
+    key = 0x000102030405060708090A0B0C0D0E0F
+    pt = 0x0001020304050607
+    ct = RC5Cipher(key).encrypt(pt)
+    assert ct == 0x7E2055A7FED5B3A6, "RC5 regression test failed (self-generated)!"
+    print(f"RC5 regression test passed: 0x{ct:x}")

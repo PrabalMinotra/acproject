@@ -1,3 +1,4 @@
+import argparse
 import os
 import torch
 import json
@@ -7,20 +8,27 @@ from src.models import LogisticRegressionModel, MLPModel, CNNModel
 from src.train import train_model
 from src.eval import evaluate_model
 
-# 12 Ciphers
+
 CIPHERS = [
     'simon', 'speck', 'present', 'prince', 'tea', 'xtea', 
     'rc5', 'katan', 'rectangle', 'chacha20', 'salsa20', 'trivium'
 ]
 
-def run_experiments(max_rounds=5, num_samples=100000, epochs=20):
+def run_experiments(
+    max_rounds=20,
+    num_samples=10000,
+    epochs=15,
+    acc_threshold=0.55,
+    hamming_threshold=0.45,
+    early_stop_rounds=2
+):
     device = 'cuda' if torch.cuda.is_available() else 'mps' if torch.backends.mps.is_available() else 'cpu'
     print(f"Using device: {device}")
     
     os.makedirs('results/models', exist_ok=True)
     os.makedirs('results/logs', exist_ok=True)
     
-    # Store results per cipher, then per round, then per model
+    
     all_results = {}
     
     for cipher_name in CIPHERS:
@@ -28,17 +36,18 @@ def run_experiments(max_rounds=5, num_samples=100000, epochs=20):
         cipher_results = {}
         all_results[cipher_name] = cipher_results
         
+        fail_streak = 0
         for r in range(1, max_rounds + 1):
             print(f"\n{'='*40}\nData & Train for {cipher_name.upper()} r={r}\n{'='*40}")
             
-            train_loader, val_loader, test_loader, block_size = get_dataloaders(
+            train_loader, val_loader, test_loader, block_size, output_bits = get_dataloaders(
                 num_samples=num_samples, 
                 rounds=r, 
                 cipher_name=cipher_name, 
                 batch_size=1024
             )
             
-            # Dynamically set input/output neuron sizes to the block size of the cipher
+            
             models = {
                 'LogisticRegression': LogisticRegressionModel(input_size=block_size, output_size=block_size),
                 'MLP': MLPModel(input_size=block_size, output_size=block_size),
@@ -49,6 +58,7 @@ def run_experiments(max_rounds=5, num_samples=100000, epochs=20):
             
             for model_name, model in models.items():
                 save_path = f"results/models/{cipher_name}_{model_name}_r{r}.pt"
+                log_path = f"results/logs/{cipher_name}_{model_name}_r{r}.csv"
                 
                 start_time = time.time()
                 history = train_model(
@@ -57,7 +67,8 @@ def run_experiments(max_rounds=5, num_samples=100000, epochs=20):
                     val_loader=val_loader, 
                     epochs=epochs, 
                     device=device,
-                    save_path=save_path
+                    save_path=save_path,
+                    log_path=log_path
                 )
                 
                 if os.path.exists(save_path):
@@ -72,15 +83,47 @@ def run_experiments(max_rounds=5, num_samples=100000, epochs=20):
                     'avg_hamming': avg_hamming,
                     'history': history,
                     'time_s': elapsed,
-                    'block_size': block_size
+                    'block_size': block_size,
+                    'output_bits': output_bits
                 }
                 
-                # Save continually to avoid data loss on crash
+                
                 with open('results/metrics.json', 'w') as f:
                     json.dump(all_results, f, indent=4)
+
+            meaningful = False
+            for model_name in models.keys():
+                metrics = cipher_results[r][model_name]
+                norm_hamming = metrics['avg_hamming'] / output_bits
+                if metrics['test_acc'] >= acc_threshold and norm_hamming <= hamming_threshold:
+                    meaningful = True
+                    break
+
+            if meaningful:
+                fail_streak = 0
+            else:
+                fail_streak += 1
+                if fail_streak >= early_stop_rounds:
+                    print(f"Stopping {cipher_name.upper()} after r={r} (no meaningful learning).")
+                    break
                     
     print("\nAll 12 Cipher experiments completed and metrics saved! Results are in results/metrics.json")
 
 if __name__ == '__main__':
-    # Using 10,000 samples for the 12-cipher loop so it finishes in a reasonable time.
-    run_experiments(max_rounds=5, num_samples=10000, epochs=15)
+    parser = argparse.ArgumentParser(description='Run reduced-round cipher experiments.')
+    parser.add_argument('--max-rounds', type=int, default=20)
+    parser.add_argument('--num-samples', type=int, default=10000)
+    parser.add_argument('--epochs', type=int, default=15)
+    parser.add_argument('--acc-threshold', type=float, default=0.55)
+    parser.add_argument('--hamming-threshold', type=float, default=0.45)
+    parser.add_argument('--early-stop-rounds', type=int, default=2)
+    args = parser.parse_args()
+
+    run_experiments(
+        max_rounds=args.max_rounds,
+        num_samples=args.num_samples,
+        epochs=args.epochs,
+        acc_threshold=args.acc_threshold,
+        hamming_threshold=args.hamming_threshold,
+        early_stop_rounds=args.early_stop_rounds
+    )
